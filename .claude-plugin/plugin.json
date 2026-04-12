@@ -1,0 +1,20 @@
+{
+  "name": "claude-context-saver",
+  "version": "1.0.0",
+  "description": "Makes AI coding sessions persistent and recoverable — so you never have to re-explain again.",
+  "author": {
+    "name": "Vishnu",
+    "url": "https://github.com/vvr1701"
+  },
+  "homepage": "https://github.com/vvr1701/claude-context-saver",
+  "repository": "https://github.com/vvr1701/claude-context-saver",
+  "license": "MIT",
+  "keywords": [
+    "context",
+    "checkpoint",
+    "memory",
+    "session",
+    "compaction",
+    "persistence"
+  ]
+}

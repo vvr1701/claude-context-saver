@@ -1,0 +1,2 @@
+# This plugin creates .claude/checkpoints/ at runtime in user projects
+# No need to ignore anything in the plugin repo itself
