@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-04-13
+
+### Added
+- `/rewind` command — time travel to previous checkpoints
+- `/rewind N` — go back N checkpoints
+- `/rewind #NNN` — go to specific checkpoint
+- `/handoff` command — comprehensive session transfer checkpoint
+- `/debug-session` command — analyze changes between checkpoints
+- `index.json` — timeline index for fast navigation
+- `handoff.md` — enhanced handoff format
+
+### Changed
+- pre-compact.sh now updates index.json
+- SKILL.md includes v2 command suggestions
+
 ## [1.0.0] - 2026-04-13
 
 ### Added

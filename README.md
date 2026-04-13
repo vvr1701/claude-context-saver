@@ -55,6 +55,37 @@ Session continues  →  You never re-explain
 | `/checkpoint` | Save rich context (decisions, files, next steps) |
 | `/restore` | Manually restore from latest checkpoint |
 
+## v2 Commands (Time Travel)
+
+| Command | Description |
+|---------|-------------|
+| `/rewind` | List available checkpoints |
+| `/rewind N` | Go back N checkpoints |
+| `/rewind #005` | Go to specific checkpoint |
+| `/handoff` | Create comprehensive handoff for session transfer |
+| `/debug-session` | Analyze what changed between checkpoints |
+
+### Time Travel Example
+
+```
+You: Something broke after my last changes
+
+/debug-session
+
+🔍 Debug: Checkpoint #004 → #005
+
+## Changes Detected
+- src/auth.ts modified
+- New error: TypeError in verifyToken()
+
+💡 Suggestion: /rewind 1 to go back
+
+/rewind 1
+
+⏪ Rewound to checkpoint #004
+   Context restored. The JWT changes have been rolled back.
+```
+
 ## What Gets Saved
 
 **Automatically (100% reliable):**

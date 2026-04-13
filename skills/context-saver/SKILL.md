@@ -39,3 +39,18 @@ When writing summary.md via /checkpoint:
 ## Commands
 - `/checkpoint` — Save rich context manually
 - `/restore` — Restore context manually
+
+## v2 Commands
+
+- `/rewind` — List checkpoints or go back N steps
+- `/rewind N` — Go back N checkpoints (time travel)
+- `/rewind #NNN` — Go to specific checkpoint
+- `/handoff` — Create comprehensive handoff checkpoint
+- `/debug-session` — Analyze what changed between checkpoints
+
+## Time Travel Behavior
+
+When user says:
+- "go back" / "undo" / "revert" → Suggest `/rewind`
+- "what changed" / "what broke" → Suggest `/debug-session`
+- "end of day" / "handoff" / "switching machines" → Suggest `/handoff`

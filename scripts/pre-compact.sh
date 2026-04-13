@@ -144,10 +144,46 @@ EOF
         log_error "Failed to update latest symlink"
     }
 
+    # === v2.0: Update index.json ===
+    update_index || true
+
     # Output confirmation
     echo "✅ Checkpoint #$ID saved before compaction"
 
     return 0
+}
+
+# === v2.0: Index.json update function ===
+update_index() {
+    local INDEX_FILE="$CHECKPOINT_DIR/index.json"
+    local SUMMARY_PREVIEW=""
+
+    # Get summary preview if exists
+    if [[ -f "$CHECKPOINT_PATH/summary.md" ]]; then
+        SUMMARY_PREVIEW=$(grep -m1 "^## Current Task" -A1 "$CHECKPOINT_PATH/summary.md" 2>/dev/null | tail -1 | head -c 100 || echo "")
+    fi
+
+    # Create index if doesn't exist
+    if [[ ! -f "$INDEX_FILE" ]]; then
+        cat > "$INDEX_FILE" << 'INDEXEOF'
+{
+  "version": 1,
+  "current": "001",
+  "checkpoints": []
+}
+INDEXEOF
+    fi
+
+    # Update current pointer
+    local TEMP_INDEX=$(mktemp)
+    if command -v jq &> /dev/null; then
+        jq --arg id "$ID" --arg ts "$TIMESTAMP" --arg trigger "${CLAUDE_HOOK_MATCHER:-unknown}" --arg preview "$SUMMARY_PREVIEW" \
+           '.current = $id | .checkpoints += [{"id": $id, "timestamp": $ts, "trigger": $trigger, "summary_preview": (if $preview == "" then null else $preview end), "has_summary": false, "has_handoff": false}]' \
+           "$INDEX_FILE" > "$TEMP_INDEX" && mv "$TEMP_INDEX" "$INDEX_FILE"
+    else
+        # Fallback: append entry manually (simplified)
+        sed -i 's/"current": "[^"]*"/"current": "'"$ID"'"/' "$INDEX_FILE" 2>/dev/null || true
+    fi
 }
 
 # Execute main and always exit 0
