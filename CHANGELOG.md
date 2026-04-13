@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-04-13
+
+### Added
+- `/branch` command — fork sessions for experimentation
+- `/branch switch` — switch between session branches
+- `/branch delete` — remove a branch
+- `/merge` command — merge branch into current
+- Cursor adapter (planned)
+- Codex adapter (planned)
+- Multi-agent architecture documentation
+- `docs/ARCHITECTURE.md` — System architecture overview
+- `docs/ROADMAP.md` — Product roadmap
+- `docs/MULTI-AGENT.md` — Multi-agent integration guide
+
+### Changed
+- index.json now supports branches (version 2)
+- Checkpoints can belong to multiple branches
+
 ## [2.0.0] - 2026-04-13
 
 ### Added
