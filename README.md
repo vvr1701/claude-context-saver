@@ -1,12 +1,22 @@
-# claude-context-saver
+<div align="center">
 
-> Makes AI coding sessions persistent and recoverable — so you never have to re-explain again.
+# 🧠 claude-context-saver
+
+**Makes AI coding sessions persistent and recoverable — so you never have to re-explain again.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)]()
 
-## The Problem
+[Installation](#-installation) • [How It Works](#-how-it-works) • [Commands](#-commands) • [Troubleshooting](#-troubleshooting) • [Contributing](#-contributing)
 
-You're deep in a debugging session. Claude finally understands your architecture. Then:
+</div>
+
+---
+
+## 😤 The Problem
+
+You're deep in a debugging session. Claude finally understands your architecture, remembers your decisions, knows what you tried. Then:
 
 ```
 ⚠️ Context compacted
@@ -14,114 +24,450 @@ You're deep in a debugging session. Claude finally understands your architecture
 Claude: I don't have context about your project.
         Can you explain what we were doing?
 
-You: 😐
+You: *sighs* ... *starts typing the same explanation for the 5th time*
 ```
 
-## The Solution
+**This happens because:**
+- Claude Code auto-compacts at ~83% context usage
+- Compaction summarizes everything, losing 60-80% of details
+- Your decisions, errors, and "why" context evaporate
+- You waste 10-20 minutes re-explaining every time
 
-**claude-context-saver** automatically saves checkpoints before compaction and restores them after.
+---
+
+## 😌 The Solution
+
+**claude-context-saver** automatically saves checkpoints before compaction and restores them after:
 
 ```
 ✅ Context restored from checkpoint #003
 
 Claude: Got it — we were implementing JWT refresh tokens.
-        The bug was in verifyToken(). Let me continue...
+        The bug was in verifyToken() on line 45.
+        Let me continue from there...
 
 You: 😌
 ```
 
-## Install
+**You never have to re-explain again.**
+
+---
+
+## 📋 Prerequisites
+
+Before installing this plugin, you need:
+
+### 1. Claude Code CLI
 
 ```bash
+# Check if Claude Code is installed
+claude --version
+
+# If not installed, install it:
+npm install -g @anthropic-ai/claude-code
+```
+
+### 2. Active Claude Account
+
+You need an active Claude account with Claude Code access.
+
+---
+
+## 🚀 Installation
+
+### Method 1: One-Command Install (Recommended)
+
+Open your terminal, navigate to any project, start Claude Code, then run:
+
+```bash
+# Step 1: Start Claude Code in your project
+cd /path/to/your/project
+claude
+
+# Step 2: Inside Claude Code, run this command:
 /plugin add github:vvr1701/claude-context-saver
 ```
 
-That's it. No configuration needed.
+That's it! The plugin is now active for ALL your projects.
 
-## How It Works
+### Method 2: Manual Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/vvr1701/claude-context-saver.git ~/.claude/plugins/claude-context-saver
+
+# Start Claude Code - it will auto-detect the plugin
+cd /path/to/your/project
+claude
+```
+
+### Method 3: Install from Source (For Contributors)
+
+```bash
+# Clone with full history
+git clone https://github.com/vvr1701/claude-context-saver.git
+cd claude-context-saver
+
+# Link to Claude plugins directory
+ln -s $(pwd) ~/.claude/plugins/claude-context-saver
+
+# Verify installation
+claude
+# You should see: 📦 claude-context-saver active
+```
+
+---
+
+## ✅ Verify Installation
+
+After installation, start a new Claude Code session:
+
+```bash
+cd /path/to/any/project
+claude
+```
+
+You should see this message on startup:
 
 ```
-Session starts     →  📦 Plugin activates
-You work           →  Context grows...
-Context hits 83%   →  ✅ Auto-checkpoint saved
-Compaction happens →  🔄 Context auto-restored
-Session continues  →  You never re-explain
+📦 claude-context-saver active
+   • Auto-saves before compaction
+   • Run /checkpoint to save rich context
+   • Run /restore to manually restore
 ```
 
-## Commands
+If you don't see this message, check [Troubleshooting](#-troubleshooting).
+
+---
+
+## 🔄 How It Works
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  SESSION LIFECYCLE                                          │
+└─────────────────────────────────────────────────────────────┘
+
+  Session starts
+       │
+       ▼
+  📦 Plugin activates
+       │
+       │  ← You work with Claude, context grows...
+       │
+       ▼
+  Context hits ~83%
+       │
+       ▼
+  ✅ Auto-checkpoint saved (before compaction)
+       │
+       ▼
+  [Compaction happens]
+       │
+       ▼
+  🔄 Context auto-restored (after compaction)
+       │
+       ▼
+  Session continues seamlessly
+       │
+       │  ← You never noticed anything happened
+       │
+       ▼
+  Session ends
+       │
+       ▼
+  🧹 Cleanup (keeps last 20 checkpoints)
+```
+
+### What Gets Saved
+
+| Type | Reliability | Contents |
+|------|-------------|----------|
+| **Auto checkpoint** | 100% guaranteed | Session ID, timestamp, files in context, last commands |
+| **Rich checkpoint** | Best effort (LLM) | Decisions, rationale, errors, solutions, next steps, code snippets |
+
+### Where Checkpoints Live
+
+```
+your-project/
+└── .claude/
+    └── checkpoints/
+        ├── 001/
+        │   ├── auto.json      # Automatic (always exists)
+        │   ├── summary.md     # Rich (from /checkpoint)
+        │   └── meta.json      # Metadata
+        ├── 002/
+        │   └── ...
+        └── latest -> 002/     # Symlink to most recent
+```
+
+---
+
+## 📖 Commands
+
+### Core Commands (v1)
 
 | Command | Description |
 |---------|-------------|
-| `/checkpoint` | Save rich context (decisions, files, next steps) |
+| `/checkpoint` | Save rich context with decisions, files, next steps |
 | `/restore` | Manually restore from latest checkpoint |
 
-## v2 Commands (Time Travel)
+### Time Travel Commands (v2)
 
 | Command | Description |
 |---------|-------------|
 | `/rewind` | List available checkpoints |
 | `/rewind N` | Go back N checkpoints |
-| `/rewind #005` | Go to specific checkpoint |
-| `/handoff` | Create comprehensive handoff for session transfer |
+| `/rewind #005` | Go to specific checkpoint #005 |
+| `/handoff` | Create comprehensive checkpoint for session transfer |
 | `/debug-session` | Analyze what changed between checkpoints |
 
-### Time Travel Example
+### Branching Commands (v3)
+
+| Command | Description |
+|---------|-------------|
+| `/branch` | List all session branches |
+| `/branch <name>` | Create new branch from current checkpoint |
+| `/branch switch <name>` | Switch to existing branch |
+| `/merge <name>` | Merge branch into current |
+
+---
+
+## 💡 Usage Examples
+
+### Example 1: Basic Usage (Automatic)
+
+Just work normally. The plugin handles everything:
 
 ```
-You: Something broke after my last changes
+You: Let's implement JWT authentication
 
-/debug-session
+Claude: [works on implementation...]
 
-🔍 Debug: Checkpoint #004 → #005
+⚠️ Context approaching limit
 
-## Changes Detected
-- src/auth.ts modified
-- New error: TypeError in verifyToken()
+✅ Checkpoint #001 saved before compaction
 
-💡 Suggestion: /rewind 1 to go back
+[Compaction happens]
 
-/rewind 1
+🔄 Context restored from checkpoint #001
 
-⏪ Rewound to checkpoint #004
-   Context restored. The JWT changes have been rolled back.
+Claude: Continuing with JWT implementation. We were adding
+        the refresh token logic to src/auth/jwt.ts...
 ```
 
-## What Gets Saved
-
-**Automatically (100% reliable):**
-- Session ID and timestamp
-- Files in context
-- Last commands executed
-
-**Via /checkpoint (best effort):**
-- Current task summary
-- Decisions with rationale
-- Files modified and why
-- Errors and solutions
-- Next steps
-- Key code context
-
-## Storage
-
-Checkpoints are stored in your project:
+### Example 2: Save Rich Context Before Break
 
 ```
-.claude/checkpoints/
-├── 001/
-│   ├── auto.json      # Automatic (guaranteed)
-│   └── summary.md     # Rich (/checkpoint)
-├── 002/
-│   └── ...
-└── latest -> 002/
+You: /checkpoint
+
+Claude: ✅ Rich checkpoint saved to #002
+
+        ## Saved Context
+        - Current task: JWT refresh token implementation
+        - Decisions: Using HTTP-only cookies for security
+        - Files: src/auth/jwt.ts, src/middleware/auth.ts
+        - Next: Add rate limiting to auth routes
 ```
 
-## Philosophy
+### Example 3: Time Travel After Bug
 
-- **Hooks are deterministic** — Auto-save always happens
-- **LLM is best-effort** — Rich context when available
-- **Never crash** — All errors handled silently
-- **Zero config** — Works immediately after install
+```
+You: Something broke after my last changes. What changed?
 
-## License
+You: /debug-session
 
-MIT
+Claude: 🔍 Debug: Checkpoint #003 → #004
+
+        ## Changes Detected
+        - src/auth/jwt.ts modified (lines 45-67)
+        - New error: TypeError in verifyToken()
+
+        💡 Suggestion: /rewind 1 to go back before this change
+
+You: /rewind 1
+
+Claude: ⏪ Rewound to checkpoint #003
+        Context restored. The problematic changes are undone.
+```
+
+### Example 4: End of Day Handoff
+
+```
+You: I'm done for today, create a handoff for tomorrow
+
+You: /handoff
+
+Claude: 📋 Handoff checkpoint saved to #005
+
+        ## TL;DR
+        Implemented JWT auth, refresh tokens working.
+        Blocked on rate limiting - need to decide on strategy.
+
+        ## Immediate Next Step
+        Decide between Redis vs in-memory rate limiting.
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Plugin not loading
+
+**Symptom:** No "📦 claude-context-saver active" message on startup
+
+**Fix:**
+```bash
+# Check if plugin is installed
+ls ~/.claude/plugins/
+
+# If not there, reinstall:
+claude
+/plugin add github:vvr1701/claude-context-saver
+```
+
+### Checkpoints not saving
+
+**Symptom:** No `.claude/checkpoints/` directory in your project
+
+**Fix:**
+1. Checkpoints are created on first compaction or `/checkpoint`
+2. Try running `/checkpoint` manually
+3. Check write permissions on your project directory
+
+### Context not restoring after compaction
+
+**Symptom:** Claude still asks for context after compaction
+
+**Fix:**
+```bash
+# Check if checkpoint exists
+ls -la .claude/checkpoints/latest/
+
+# If exists but not loading, try manual restore:
+/restore
+```
+
+### Permission errors
+
+**Symptom:** "Permission denied" in Claude output
+
+**Fix:**
+```bash
+# Make scripts executable
+chmod +x ~/.claude/plugins/claude-context-saver/scripts/*.sh
+```
+
+### Hooks not firing
+
+**Symptom:** No auto-save on compaction
+
+**Fix:**
+```bash
+# Verify hooks.json is valid
+cat ~/.claude/plugins/claude-context-saver/hooks/hooks.json | python3 -m json.tool
+
+# Restart Claude Code
+exit
+claude
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ LAYER 1: Infrastructure (Hooks) — 100% Reliable            │
+│                                                             │
+│  PreCompact ──► PostCompact ──► SessionStart ──► SessionEnd │
+│      │              │               │               │       │
+│   auto.json     restore          resume          cleanup    │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│ LAYER 2: Intelligence (LLM) — Best Effort                  │
+│                                                             │
+│  /checkpoint    /restore    /rewind    /handoff    /debug   │
+│      │             │           │          │          │      │
+│  summary.md    display     timeline   handoff.md   diff     │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│ LAYER 3: State Engine (Files)                              │
+│                                                             │
+│  .claude/checkpoints/NNN/                                   │
+│  ├── auto.json     (guaranteed)                             │
+│  ├── summary.md    (optional)                               │
+│  ├── handoff.md    (optional)                               │
+│  └── meta.json     (guaranteed)                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+### Quick Start
+
+```bash
+# Fork and clone
+git clone https://github.com/YOUR_USERNAME/claude-context-saver.git
+cd claude-context-saver
+
+# Create branch
+git checkout -b feature/your-feature
+
+# Make changes, then test
+chmod +x scripts/*.sh
+bash -n scripts/*.sh  # Syntax check
+
+# Commit and push
+git add .
+git commit -m "feat: your feature description"
+git push origin feature/your-feature
+
+# Open PR on GitHub
+```
+
+### Guidelines
+
+1. **Don't break hooks** — Hooks must NEVER crash. Always use `set +e` and `exit 0`.
+2. **Test scripts** — Run `bash -n scripts/*.sh` before committing.
+3. **Update CHANGELOG** — Add entry for your changes.
+4. **Keep it simple** — This plugin values reliability over features.
+
+### Roadmap
+
+- [x] v1.0 — Core checkpoint system
+- [x] v2.0 — Time travel (`/rewind`, `/handoff`, `/debug-session`)
+- [x] v3.0 — Branching (`/branch`, `/merge`)
+- [ ] v4.0 — Visual timeline UI
+- [ ] v5.0 — Team sync (share checkpoints)
+
+---
+
+## 📄 License
+
+MIT License — Use it, fork it, improve it.
+
+---
+
+## 🙏 Acknowledgments
+
+Built with frustration (from losing context) and love (for finally solving it).
+
+---
+
+<div align="center">
+
+**[⬆ back to top](#-claude-context-saver)**
+
+Made by [vvr1701](https://github.com/vvr1701)
+
+*"You never have to re-explain again."*
+
+</div>
