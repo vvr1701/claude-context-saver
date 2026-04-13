@@ -8,7 +8,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
 [![Version](https://img.shields.io/badge/version-3.0.0-blue)]()
 
-[Installation](#-installation) • [How It Works](#-how-it-works) • [Commands](#-commands) • [Troubleshooting](#-troubleshooting) • [Contributing](#-contributing)
+[Installation](#-installation) • [How It Works](#-how-it-works) • [Commands](#-commands) • [Usage Examples](#-usage-examples) • [Troubleshooting](#-troubleshooting)
 
 </div>
 
@@ -204,27 +204,15 @@ your-project/
 
 ## 📖 Commands
 
-### Core Commands (v1)
-
 | Command | Description |
 |---------|-------------|
 | `/checkpoint` | Save rich context with decisions, files, next steps |
 | `/restore` | Manually restore from latest checkpoint |
-
-### Time Travel Commands (v2)
-
-| Command | Description |
-|---------|-------------|
 | `/rewind` | List available checkpoints |
 | `/rewind N` | Go back N checkpoints |
 | `/rewind #005` | Go to specific checkpoint #005 |
 | `/handoff` | Create comprehensive checkpoint for session transfer |
 | `/debug-session` | Analyze what changed between checkpoints |
-
-### Branching Commands (v3)
-
-| Command | Description |
-|---------|-------------|
 | `/branch` | List all session branches |
 | `/branch <name>` | Create new branch from current checkpoint |
 | `/branch switch <name>` | Switch to existing branch |
@@ -373,92 +361,11 @@ claude
 
 ---
 
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 1: Infrastructure (Hooks) — 100% Reliable            │
-│                                                             │
-│  PreCompact ──► PostCompact ──► SessionStart ──► SessionEnd │
-│      │              │               │               │       │
-│   auto.json     restore          resume          cleanup    │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 2: Intelligence (LLM) — Best Effort                  │
-│                                                             │
-│  /checkpoint    /restore    /rewind    /handoff    /debug   │
-│      │             │           │          │          │      │
-│  summary.md    display     timeline   handoff.md   diff     │
-└─────────────────────────────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 3: State Engine (Files)                              │
-│                                                             │
-│  .claude/checkpoints/NNN/                                   │
-│  ├── auto.json     (guaranteed)                             │
-│  ├── summary.md    (optional)                               │
-│  ├── handoff.md    (optional)                               │
-│  └── meta.json     (guaranteed)                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how:
-
-### Quick Start
-
-```bash
-# Fork and clone
-git clone https://github.com/YOUR_USERNAME/claude-context-saver.git
-cd claude-context-saver
-
-# Create branch
-git checkout -b feature/your-feature
-
-# Make changes, then test
-chmod +x scripts/*.sh
-bash -n scripts/*.sh  # Syntax check
-
-# Commit and push
-git add .
-git commit -m "feat: your feature description"
-git push origin feature/your-feature
-
-# Open PR on GitHub
-```
-
-### Guidelines
-
-1. **Don't break hooks** — Hooks must NEVER crash. Always use `set +e` and `exit 0`.
-2. **Test scripts** — Run `bash -n scripts/*.sh` before committing.
-3. **Update CHANGELOG** — Add entry for your changes.
-4. **Keep it simple** — This plugin values reliability over features.
-
-### Roadmap
-
-- [x] v1.0 — Core checkpoint system
-- [x] v2.0 — Time travel (`/rewind`, `/handoff`, `/debug-session`)
-- [x] v3.0 — Branching (`/branch`, `/merge`)
-- [ ] v4.0 — Visual timeline UI
-- [ ] v5.0 — Team sync (share checkpoints)
-
----
-
 ## 📄 License
 
 MIT License — Use it, fork it, improve it.
 
----
-
-## 🙏 Acknowledgments
-
-Built with frustration (from losing context) and love (for finally solving it).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ---
 
